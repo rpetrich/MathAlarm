@@ -1,0 +1,10 @@
+Package: com.rpetrich.mathalarm
+Priority: optional
+Section: Tweaks
+Architecture: iphoneos-arm
+Version: 0.1
+Description: Awake to Arithmetic
+Name: MathAlarm
+Depends: firmware (>= 4.2), mobilesubstrate
+Conflicts: cy.ipad
+Author: Ryan Petrich

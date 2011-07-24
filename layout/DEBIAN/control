@@ -5,6 +5,6 @@ Architecture: iphoneos-arm
 Version: 0.1
 Description: Awake to Arithmetic
 Name: MathAlarm
-Depends: firmware (>= 4.2), mobilesubstrate
+Depends: firmware (>= 4.2), mobilesubstrate, preferenceloader
 Conflicts: cy.ipad
 Author: Ryan Petrich

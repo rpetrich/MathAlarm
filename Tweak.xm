@@ -2,10 +2,15 @@
 #import <SpringBoard/SpringBoard.h>
 #import <SpringBoard/SBRemoteLocalNotificationAlert.h>
 #import <CaptainHook/CaptainHook.h>
+#import <notify.h>
+
+static BOOL MAEnabled;
+static NSInteger MADifficulty;
+static NSInteger MAOperator;
 
 static BOOL waitingForAnswer;
 static BOOL lockScreen;
-static NSInteger answer;
+static NSUInteger answer;
 static NSString *alertMessage;
 static SBRemoteLocalNotificationAlert *activeAlert;
 
@@ -27,11 +32,52 @@ static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 	if (IsMobileTimerAlarm(self)) {
 		if (!waitingForAnswer) {
 			waitingForAnswer = YES;
-			NSInteger a = arc4random() % 90 + 11;
-			NSInteger b = arc4random() % 10 + 3;
-			answer = a * b;
+			NSUInteger a = arc4random();
+			NSUInteger b = arc4random();
+			switch (MADifficulty) {
+				case 0:
+					a = (a % 10) + 3;
+					b = (b % 10) + 3;
+					break;
+				case 1:
+					a = (a % 25) + 4;
+					b = (b % 10) + 3;
+					break;
+				case 2:
+					a = (a % 90) + 11;
+					b = (b % 10) + 3;
+					break;
+				case 3:
+					a = a % 90 + 11;
+					b = b % 90 + 11;
+					break;
+			}
+			NSString *operatorString;
+			switch (MAOperator) {
+				case 0:
+					operatorString = @"+";
+					answer = a + b;
+					break;
+				case 1:
+					operatorString = @"-";
+					answer = a;
+					a = a + b;
+					break;
+				case 2:
+					operatorString = @"×";
+					answer = a * b;
+					break;
+				case 3:
+					operatorString = @"÷";
+					answer = a;
+					a = a * b;
+					break;
+				default:
+					operatorString = nil;
+					break;
+			}
 			[alertMessage release];
-			alertMessage = [[NSString alloc] initWithFormat:@"%d × %d = ?", a, b];
+			alertMessage = [[NSString alloc] initWithFormat:@"%d %@ %d = ?", a, operatorString, b];
 		}
 		UIAlertView *alertView = [self alertSheet];
 		alertView.title = @"Alarm";
@@ -53,9 +99,10 @@ static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 	}
 }
 
-static inline void ReactivateAlert()
+static void ReactivateAlert()
 {
-	SBRemoteLocalNotificationAlert *newAlert = [[[activeAlert class] alloc] initWithApplication:CHIvar(activeAlert, _app, SBApplication *) body:nil showActionButton:YES actionLabel:nil];
+	SBApplication *app = [[%c(SBApplicationController) sharedInstance] applicationWithDisplayIdentifier:@"com.apple.mobiletimer"];
+	SBRemoteLocalNotificationAlert *newAlert = [[%c(SBRemoteLocalNotificationAlert) alloc] initWithApplication:app body:nil showActionButton:YES actionLabel:nil];
 	newAlert.delegate = activeAlert.delegate;
 	[activeAlert release];
 	activeAlert = newAlert;
@@ -121,3 +168,34 @@ static inline void ReactivateAlert()
 }
 
 %end
+
+@implementation NSObject (MathAlarm)
+
+- (void)mathAlarmTestAlarm
+{
+	notify_post("com.rpetrich.mathalarm/testalarm");
+}
+
+@end
+
+static void SettingsCallback()
+{
+	NSDictionary *settings = [[NSDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.rpetrich.mathalarm.plist"];
+	id temp;
+	temp = [settings objectForKey:@"MAEnabled"];
+	MAEnabled = temp ? [temp boolValue] : YES;
+	temp = [settings objectForKey:@"MADifficulty"];
+	MADifficulty = temp ? [temp integerValue] : 2;
+	temp = [settings objectForKey:@"MAOperator"];
+	MAOperator = temp ? [temp integerValue] : 2;
+	[settings release];
+}
+
+%ctor
+{
+	CHAutoreleasePoolForScope();
+	CFNotificationCenterRef nc = CFNotificationCenterGetDarwinNotifyCenter();
+	CFNotificationCenterAddObserver(nc, NULL, (CFNotificationCallback)SettingsCallback, CFSTR("com.rpetrich.mathalarm/settingschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+	CFNotificationCenterAddObserver(nc, NULL, (CFNotificationCallback)ReactivateAlert, CFSTR("com.rpetrich.mathalarm/testalarm"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+	SettingsCallback();
+}

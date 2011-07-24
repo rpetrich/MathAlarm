@@ -5,6 +5,7 @@
 %hook SBRemoteLocalNotificationAlert
 
 static BOOL waitingForAnswer;
+static BOOL lockScreen;
 static NSInteger answer;
 
 + (void)stopPlayingAlertSoundOrRingtone
@@ -34,6 +35,12 @@ static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 		alertView.cancelButtonIndex = [alertView addButtonWithTitle:@"Snooze"];
 		[alertView addButtonWithTitle:@"Deactivate"];
 		[alertView setNumberOfRows:1];
+                if(lockScreen) {
+        	      window1 = [[UIWindow alloc] init];
+    	              window1.frame = CGRectMake(0.0, 0.0, 0.0, 0.0);
+    		      window1.windowLevel = UIWindowLevelAlert;
+    		      [window1 makeKeyAndVisible];
+		}
 	} else {
 		%orig;
 	}
@@ -46,6 +53,11 @@ static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 		waitingForAnswer = ![textField.text isEqualToString:[NSString stringWithFormat:@"%d", answer]];
 		if (waitingForAnswer)
 			return;
+	}
+
+	if(lockScreen) {
+		[window1 resignKeyWindow];
+		[window1 release];
 	}
 	%orig;
 }
@@ -76,4 +88,17 @@ static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 		%orig;
 }
 
+%end
+
+%hook SBAwayController 
+- (void) lock {
+	lockScreen = YES;
+        %orig;
+}
+
+- (void)_finishedUnlockAttemptWithStatus:(BOOL)status
+{
+	lockScreen = NO;
+        %orig;
+}
 %end

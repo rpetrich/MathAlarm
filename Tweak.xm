@@ -9,12 +9,16 @@ static NSInteger MADifficulty;
 static NSInteger MAOperator;
 
 static BOOL waitingForAnswer;
-static BOOL lockScreen;
 static NSUInteger answer;
 static NSString *alertMessage;
 static SBRemoteLocalNotificationAlert *activeAlert;
 
 %hook SBRemoteLocalNotificationAlert
+
++ (id)presentWithLocalNotification:(id)localNotification application:(SBApplication *)application
+{
+	return activeAlert ? nil : %orig;
+}
 
 + (void)stopPlayingAlertSoundOrRingtone
 {
@@ -24,7 +28,8 @@ static SBRemoteLocalNotificationAlert *activeAlert;
 
 static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 {
-	return [[CHIvar(self, _app, SBApplication *) displayIdentifier] isEqualToString:@"com.apple.mobiletimer"];
+	return [objc_msgSend(self, @selector(alertItemNotificationSender:)) isEqualToString:@"Clock"];
+//	return [[CHIvar(self, _app, SBApplication *) displayIdentifier] isEqualToString:@"com.apple.mobiletimer"];
 }
 
 - (void)configure:(BOOL)configure requirePasscodeForActions:(BOOL)actions
@@ -81,7 +86,7 @@ static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 		}
 		UIAlertView *alertView = [self alertSheet];
 		alertView.title = @"Alarm";
-		if (lockScreen) {
+		if ([[%c(SBAwayController) sharedAwayController] isLocked]) {
 			alertView.message = @"Unlock to deactivate";
 		} else {
 			alertView.message = alertMessage;
@@ -106,7 +111,7 @@ static void ReactivateAlert()
 	newAlert.delegate = activeAlert.delegate;
 	[activeAlert release];
 	activeAlert = newAlert;
-	[(SBAlertItemsController *)[%c(SBAlertItemsController) sharedInstance] activateAlertItem:activeAlert];
+	[(SBAlertItemsController *)[%c(SBAlertItemsController) sharedInstance] performSelector:@selector(activateAlertItem:) withObject:activeAlert afterDelay:0.0];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -137,24 +142,8 @@ static void ReactivateAlert()
 
 %hook SBAwayController 
 
-- (void)lock
+- (void)_sendLockStateChangedNotification
 {
-	lockScreen = YES;
-	if (waitingForAnswer && activeAlert) {
-		waitingForAnswer = NO;
-		[[activeAlert alertSheet] dismissAnimated:NO];
-		[activeAlert dismiss:1];
-		%orig;
-		waitingForAnswer = YES;
-		ReactivateAlert();
-	} else {
-		%orig;
-	}
-}
-
-- (void)_finishedUnlockAttemptWithStatus:(BOOL)status
-{
-	lockScreen = NO;
 	if (waitingForAnswer && activeAlert) {
 		waitingForAnswer = NO;
 		[[activeAlert alertSheet] dismissAnimated:NO];

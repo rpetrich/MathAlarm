@@ -34,6 +34,8 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Cognitive function may be reduced during the first tens of minutes after waking. Select a difficulty setting that is challenging enough to keep you awake, yet still within your ability.</string>
 		</dict>
 		<dict>
 			<key>cell</key>

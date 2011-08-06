@@ -17,7 +17,7 @@ static SBRemoteLocalNotificationAlert *activeAlert;
 
 + (id)presentWithLocalNotification:(id)localNotification application:(SBApplication *)application
 {
-	return activeAlert ? nil : %orig;
+	return waitingForAnswer ? nil : %orig;
 }
 
 + (void)stopPlayingAlertSoundOrRingtone

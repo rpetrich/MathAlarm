@@ -107,19 +107,25 @@ static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 static void ReactivateAlert()
 {
 	SBApplication *app = [[%c(SBApplicationController) sharedInstance] applicationWithDisplayIdentifier:@"com.apple.mobiletimer"];
-	SBRemoteLocalNotificationAlert *newAlert = [[%c(SBRemoteLocalNotificationAlert) alloc] initWithApplication:app body:nil showActionButton:YES actionLabel:nil];
-	newAlert.delegate = activeAlert.delegate;
+	SBRemoteLocalNotificationAlert *newAlert = [[%c(SBRemoteLocalNotificationAlert) ?: %c(SBSystemLocalNotificationAlert) alloc] initWithApplication:app body:nil showActionButton:YES actionLabel:nil];
+	if (newAlert) {
+		newAlert.delegate = activeAlert.delegate;
+		[(SBAlertItemsController *)[%c(SBAlertItemsController) sharedInstance] performSelector:@selector(activateAlertItem:) withObject:newAlert afterDelay:0.0];
+	}
 	[activeAlert release];
 	activeAlert = newAlert;
-	[(SBAlertItemsController *)[%c(SBAlertItemsController) sharedInstance] performSelector:@selector(activateAlertItem:) withObject:activeAlert afterDelay:0.0];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
 	if (IsMobileTimerAlarm(self)) {
-		UITextField *textField = [alertView textFieldAtIndex:0];
-		[textField resignFirstResponder];
-		waitingForAnswer = ![textField.text isEqualToString:[NSString stringWithFormat:@"%d", answer]];
+		if ([alertView textFieldCount]) {
+			UITextField *textField = [alertView textFieldAtIndex:0];
+			[textField resignFirstResponder];
+			waitingForAnswer = ![textField.text isEqualToString:[NSString stringWithFormat:@"%d", answer]];
+		} else {
+			waitingForAnswer = YES;
+		}
 		if (waitingForAnswer)
 			[self dismiss:1];
 		else
@@ -134,8 +140,10 @@ static void ReactivateAlert()
 %new(v@:@)
 - (void)didPresentAlertView:(UIAlertView *)alertView
 {
-	UITextField *textField = [alertView textFieldAtIndex:0];
-	[textField becomeFirstResponder];
+	if ([alertView textFieldCount]) {
+		UITextField *textField = [alertView textFieldAtIndex:0];
+		[textField becomeFirstResponder];
+	}
 }
 
 %end
@@ -183,6 +191,7 @@ static void SettingsCallback()
 %ctor
 {
 	CHAutoreleasePoolForScope();
+	%init(SBRemoteLocalNotificationAlert = objc_getClass("SBRemoteLocalNotificationAlert") ?: objc_getClass("SBSystemLocalNotificationAlert"));
 	CFNotificationCenterRef nc = CFNotificationCenterGetDarwinNotifyCenter();
 	CFNotificationCenterAddObserver(nc, NULL, (CFNotificationCallback)SettingsCallback, CFSTR("com.rpetrich.mathalarm/settingschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	CFNotificationCenterAddObserver(nc, NULL, (CFNotificationCallback)ReactivateAlert, CFSTR("com.rpetrich.mathalarm/testalarm"), NULL, CFNotificationSuspensionBehaviorCoalesce);

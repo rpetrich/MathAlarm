@@ -36,7 +36,7 @@ static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 
 - (void)configure:(BOOL)configure requirePasscodeForActions:(BOOL)actions
 {
-	if (IsMobileTimerAlarm(self)) {
+	if (IsMobileTimerAlarm(self) && MAEnabled) {
 		if (!waitingForAnswer) {
 			waitingForAnswer = YES;
 			NSUInteger a = arc4random();
@@ -128,7 +128,7 @@ static void ReactivateAlert()
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-	if (IsMobileTimerAlarm(self)) {
+	if (IsMobileTimerAlarm(self) && MAEnabled) {
 		if ([alertView textFieldCount]) {
 			UITextField *textField = [alertView textFieldAtIndex:0];
 			[textField resignFirstResponder];

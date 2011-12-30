@@ -4,6 +4,8 @@
 #import <CaptainHook/CaptainHook.h>
 #import <notify.h>
 
+%config(generator=internal)
+
 static BOOL MAEnabled;
 #ifdef PRO_VERSION
 static NSInteger MADifficulty;
@@ -137,7 +139,7 @@ static void ReactivateAlert()
 			waitingForAnswer = YES;
 		}
 		if (waitingForAnswer)
-			[self dismiss:1];
+			[(SBRemoteLocalNotificationAlert *)self dismiss:1];
 		else
 			%orig;
 		if (waitingForAnswer)

@@ -5,8 +5,10 @@
 #import <notify.h>
 
 static BOOL MAEnabled;
+#ifdef PRO_VERSION
 static NSInteger MADifficulty;
 static NSInteger MAOperator;
+#endif
 
 static BOOL waitingForAnswer;
 static NSUInteger answer;
@@ -39,6 +41,7 @@ static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 			waitingForAnswer = YES;
 			NSUInteger a = arc4random();
 			NSUInteger b = arc4random();
+#ifdef PRO_VERSION
 			switch (MADifficulty) {
 				case 0:
 					a = (a % 10) + 3;
@@ -49,15 +52,19 @@ static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 					b = (b % 10) + 3;
 					break;
 				case 2:
+#endif
 					a = (a % 90) + 11;
 					b = (b % 10) + 3;
+#ifdef PRO_VERSION
 					break;
 				case 3:
 					a = a % 90 + 11;
 					b = b % 90 + 11;
 					break;
 			}
+#endif
 			NSString *operatorString;
+#ifdef PRO_VERSION
 			switch (MAOperator) {
 				case 0:
 					operatorString = @"+";
@@ -69,8 +76,10 @@ static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 					a = a + b;
 					break;
 				case 2:
+#endif
 					operatorString = @"×";
 					answer = a * b;
+#ifdef PRO_VERSION
 					break;
 				case 3:
 					operatorString = @"÷";
@@ -81,6 +90,7 @@ static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 					operatorString = nil;
 					break;
 			}
+#endif
 			[alertMessage release];
 			alertMessage = [[NSString alloc] initWithFormat:@"%d %@ %d = ?", a, operatorString, b];
 		}
@@ -173,6 +183,15 @@ static void ReactivateAlert()
 	notify_post("com.rpetrich.mathalarm/testalarm");
 }
 
+#ifndef PRO_VERSION
+
+- (void)mathAlarmUpgradeToPlus
+{
+	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"cydia://package/com.rpetrich.mathalarmplus"]];
+}
+
+#endif
+
 @end
 
 static void SettingsCallback()
@@ -181,10 +200,12 @@ static void SettingsCallback()
 	id temp;
 	temp = [settings objectForKey:@"MAEnabled"];
 	MAEnabled = temp ? [temp boolValue] : YES;
+#ifdef PRO_VERSION
 	temp = [settings objectForKey:@"MADifficulty"];
 	MADifficulty = temp ? [temp integerValue] : 2;
 	temp = [settings objectForKey:@"MAOperator"];
 	MAOperator = temp ? [temp integerValue] : 2;
+#endif
 	[settings release];
 }
 

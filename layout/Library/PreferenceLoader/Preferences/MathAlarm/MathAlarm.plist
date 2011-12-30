@@ -16,6 +16,8 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Cognitive function may be reduced during the first tens of minutes after waking. Update to MathAlarm Plus to choose difficulty setting and unlock addition, subtraction and division.</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -35,72 +37,6 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
-			<string>Cognitive function may be reduced during the first tens of minutes after waking. Select a difficulty setting that is challenging enough to keep you awake, yet still within your ability.</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSLinkListCell</string>
-			<key>default</key>
-			<integer>2</integer>
-			<key>defaults</key>
-			<string>com.rpetrich.mathalarm</string>
-			<key>detail</key>
-			<string>PSListItemsController</string>
-			<key>key</key>
-			<string>MADifficulty</string>
-			<key>label</key>
-			<string>Difficulty</string>
-			<key>validTitles</key>
-			<array>
-				<string>Simple</string>
-				<string>Easy</string>
-				<string>Normal</string>
-				<string>Hard</string>
-			</array>
-			<key>validValues</key>
-			<array>
-				<integer>0</integer>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
-			</array>
-			<key>PostNotification</key>
-			<string>com.rpetrich.mathalarm/settingschanged</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSLinkListCell</string>
-			<key>default</key>
-			<integer>2</integer>
-			<key>defaults</key>
-			<string>com.rpetrich.mathalarm</string>
-			<key>detail</key>
-			<string>PSListItemsController</string>
-			<key>key</key>
-			<string>MAOperator</string>
-			<key>label</key>
-			<string>Operator</string>
-			<key>validTitles</key>
-			<array>
-				<string>Addition</string>
-				<string>Subtraction</string>
-				<string>Multiplication</string>
-				<string>Division</string>
-			</array>
-			<key>validValues</key>
-			<array>
-				<integer>0</integer>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
-			</array>
-			<key>PostNotification</key>
-			<string>com.rpetrich.mathalarm/settingschanged</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>footerText</key>
 			<string>© 2011 Ryan Petrich</string>
 		</dict>
 		<dict>
@@ -110,6 +46,14 @@
 			<string>Test Alarm</string>
 			<key>action</key>
 			<string>mathAlarmTestAlarm</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>Upgrade to MathAlarm Plus</string>
+			<key>action</key>
+			<string>mathAlarmUpgradeToPlus</string>
 		</dict>
 	</array>
 	<key>title</key>

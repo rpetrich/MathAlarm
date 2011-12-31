@@ -10,6 +10,7 @@ static BOOL MAEnabled;
 #ifdef PRO_VERSION
 static NSInteger MADifficulty;
 static NSInteger MAOperator;
+static BOOL MAAllowSnooze;
 #endif
 
 static BOOL waitingForAnswer;
@@ -135,6 +136,10 @@ static void ReactivateAlert()
 			UITextField *textField = [alertView textFieldAtIndex:0];
 			[textField resignFirstResponder];
 			waitingForAnswer = ![textField.text isEqualToString:[NSString stringWithFormat:@"%d", answer]];
+#ifdef PRO_VERSION
+			if (waitingForAnswer && (buttonIndex == 0) && MAAllowSnooze)
+				waitingForAnswer = NO;
+#endif
 		} else {
 			waitingForAnswer = YES;
 		}
@@ -207,6 +212,7 @@ static void SettingsCallback()
 	MADifficulty = temp ? [temp integerValue] : 2;
 	temp = [settings objectForKey:@"MAOperator"];
 	MAOperator = temp ? [temp integerValue] : 2;
+	MAAllowSnooze = [[settings objectForKey:@"MAAllowSnooze"] boolValue];
 #endif
 	[settings release];
 }

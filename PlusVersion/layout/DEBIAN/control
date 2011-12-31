@@ -13,5 +13,5 @@ Conflicts: cy.ipad, com.rpetrich.mathalarm
 Replaces: com.rpetrich.mathalarm
 Sponsor: thebigboss.org <http://thebigboss.org>
 Author: Ryan Petrich <rpetrich+mathalarm@gmail.com>
-Tag: purpose::extension
+Tag: purpose::extension, cydia::commercial
 dev: rpetrich

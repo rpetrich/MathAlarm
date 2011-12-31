@@ -3,9 +3,15 @@ Priority: optional
 Section: Tweaks
 Architecture: iphoneos-arm
 Version: 1.0
+Maintainer: BigBoss <bigboss@thebigboss.org>
 Description: Awake to Arithmetic with more options!
+Homepage: http://rpetri.ch/cydia/mathalarmplus/
+Depiction: http://rpetri.ch/cydia/mathalarmplus/
 Name: MathAlarm Plus
 Depends: firmware (>= 4.2), mobilesubstrate, preferenceloader
 Conflicts: cy.ipad, com.rpetrich.mathalarm
 Replaces: com.rpetrich.mathalarm
-Author: Ryan Petrich
+Sponsor: thebigboss.org <http://thebigboss.org>
+Author: Ryan Petrich <rpetrich+mathalarm@gmail.com>
+Tag: purpose::extension
+dev: rpetrich

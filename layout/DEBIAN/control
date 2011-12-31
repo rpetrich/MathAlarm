@@ -2,9 +2,15 @@ Package: com.rpetrich.mathalarm
 Priority: optional
 Section: Tweaks
 Architecture: iphoneos-arm
-Version: 0.1
+Version: 0.1-1
+Maintainer: BigBoss <bigboss@thebigboss.org>
 Description: Awake to Arithmetic
+Homepage: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=mathalarmData
+Depiction: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=mathalarmData
 Name: MathAlarm
-Depends: firmware (>= 4.2), mobilesubstrate, preferenceloader
+Depends: firmware (>= 4.2), mobilesubstrate
 Conflicts: cy.ipad
-Author: Ryan Petrich
+Sponsor: thebigboss.org <http://thebigboss.org>
+Author: Ryan Petrich <rpetrich+mathalarmplus@gmail.com>
+Tag: purpose::extension
+dev: rpetrich

@@ -2,7 +2,7 @@ Package: com.rpetrich.mathalarmplus
 Priority: optional
 Section: Tweaks
 Architecture: iphoneos-arm
-Version: 1.0
+Version: 1.0.1
 Maintainer: BigBoss <bigboss@thebigboss.org>
 Description: Awake to Arithmetic with more options!
 Homepage: http://rpetri.ch/cydia/mathalarmplus/

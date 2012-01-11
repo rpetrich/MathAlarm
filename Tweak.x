@@ -33,8 +33,8 @@ static SBRemoteLocalNotificationAlert *activeAlert;
 
 static inline BOOL IsMobileTimerAlarm(SBRemoteLocalNotificationAlert *self)
 {
-	return [objc_msgSend(self, @selector(alertItemNotificationSender)) isEqualToString:@"Clock"];
-//	return [[CHIvar(self, _app, SBApplication *) displayIdentifier] isEqualToString:@"com.apple.mobiletimer"];
+//	return [objc_msgSend(self, @selector(alertItemNotificationSender)) isEqualToString:@"Clock"];
+	return [[CHIvar(self, _app, SBApplication *) displayIdentifier] isEqualToString:@"com.apple.mobiletimer"];
 }
 
 - (void)configure:(BOOL)configure requirePasscodeForActions:(BOOL)actions
